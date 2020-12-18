@@ -39,7 +39,7 @@ def parse_args():
     parser.add_argument('--n_hidden_layers', type=int, default=3)
     parser.add_argument('--l1_coef', type=float, default=0.0)
     parser.add_argument('--seed', type=int, default=0)
-    parser.add_argument('--use_cuda', type=int, default=1, choices=[0, 1])
+    parser.add_argument('--use_cuda', type=int, default=0, choices=[0, 1])
     return parser.parse_args()
 
 
@@ -81,6 +81,9 @@ def train(model, device, train_loaders, optimizer, epoch, writer,
 
         inputs = torch.cat(inputs, dim=0)
         target = torch.cat(target, dim=0)
+
+        inputs = inputs.float()
+        target = target.float()
 
         optimizer.zero_grad()
 
@@ -130,8 +133,9 @@ def run_test(model, device, test_loader, writer, epoch, loss_fn, log_suffix=''):
         for data, target in test_loader:
             data = data.to(device)
             target = target.to(device)
+            target = target.float()
 
-            output = model(data)
+            output = model(data.float())
             output = output.squeeze(1)
 
             validate_target_outupt_shapes(output, target)

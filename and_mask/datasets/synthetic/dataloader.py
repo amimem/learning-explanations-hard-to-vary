@@ -1,6 +1,6 @@
 import torch
 from torch.utils.data import TensorDataset
-
+from sklearn.datasets import make_classification, make_blobs
 from and_mask.datasets.synthetic.synthetic_data_gen import get_spirals_dataset
 
 def make_dataloader(n_examples, env, n_envs, n_revolutions, n_dims,
@@ -9,13 +9,15 @@ def make_dataloader(n_examples, env, n_envs, n_revolutions, n_dims,
                     flip_first_signature=False,
                     seed=None):
 
-    inputs, labels = get_spirals_dataset(n_examples,
-                                         n_rotations=n_revolutions,
-                                         env=env,
-                                         n_envs=n_envs,
-                                         n_dims_signatures=n_dims,
-                                         seed=seed
-                                         )
+
+    inputs, labels = make_blobs(n_examples, n_dims + 2, 2, shuffle=False, random_state=seed)
+    # inputs, labels = get_spirals_dataset(n_examples,
+    #                                      n_rotations=n_revolutions,
+    #                                      env=env,
+    #                                      n_envs=n_envs,
+    #                                      n_dims_signatures=n_dims,
+    #                                      seed=seed
+    #                                      )
     if flip_first_signature:
         inputs[:1, 2:] = -inputs[:1, 2:]
 
