@@ -144,7 +144,11 @@ def run_test(model, device, test_loader, writer, epoch, loss_fn, log_suffix=''):
             correct += count_correct(output, target)
             total += data.shape[0]
 
-    test_acc = correct / total
+    if total != 0:
+        test_acc = correct / total
+    else:
+        test_acc = 0
+        
     logger.info('Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)'.format(
         test_loss, correct, total,
         100. * test_acc))
