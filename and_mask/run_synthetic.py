@@ -15,7 +15,7 @@ from and_mask.and_mask_utils import get_grads
 from and_mask.datasets.common import permutation_groups
 import and_mask.datasets.synthetic.dataloader as synthetic_dataloader
 from and_mask.models.synthetic import get_synthetic_model
-from and_mask.utils.utils import add_l1_grads, validate_target_outupt_shapes, count_correct
+from and_mask.utils.utils import add_l1_grads, add_l2_grads, validate_target_outupt_shapes, count_correct
 
 
 def parse_args():
@@ -38,6 +38,7 @@ def parse_args():
     parser.add_argument('--n_hidden_units', type=int, default=256)
     parser.add_argument('--n_hidden_layers', type=int, default=3)
     parser.add_argument('--l1_coef', type=float, default=0.0)
+    parser.add_argument('--l2_coef', type=float, default=0.0)
     parser.add_argument('--seed', type=int, default=0)
     parser.add_argument('--use_cuda', type=int, default=0, choices=[0, 1])
     return parser.parse_args()
@@ -48,6 +49,7 @@ def train(model, device, train_loaders, optimizer, epoch, writer,
           n_agreement_envs,
           loss_fn,
           l1_coef,
+          l2_coef,
           method,
           agreement_threshold,
           scheduler,
@@ -105,6 +107,8 @@ def train(model, device, train_loaders, optimizer, epoch, writer,
 
         if l1_coef > 0.0:
             add_l1_grads(l1_coef, optimizer.param_groups)
+        if l2_coef > 0.0:
+            add_l2_grads(l2_coef, optimizer.param_groups)
 
         optimizer.step()
 
@@ -231,6 +235,7 @@ def main(args):
               n_agreement_envs=args.n_agreement_envs,
               loss_fn=loss_fn,
               l1_coef=args.l1_coef,
+              l2_coef=args.l2_coef,
               method=args.method,
               agreement_threshold=args.agreement_threshold,
               scheduler=scheduler,

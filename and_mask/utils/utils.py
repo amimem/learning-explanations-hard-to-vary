@@ -8,6 +8,12 @@ def add_l1_grads(l1_coef, param_groups):
             grad = p.grad.data
             grad.add_(l1_coef, torch.sign(p.data))
 
+def add_l2_grads(l2_coef, param_groups):
+    for group in param_groups:
+        for p in group['params']:
+            assert p.grad is not None, 'We have not decided yet what to do in this case'
+            grad = p.grad.data
+            grad.add_(l2_coef, p.data) # l2_coef = 2*l2_coef
 
 def validate_target_outupt_shapes(output, target):
     if output.ndimension() == 1:
