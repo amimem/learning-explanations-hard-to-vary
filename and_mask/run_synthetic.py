@@ -25,9 +25,9 @@ def parse_args():
     parser.add_argument('--n_train_envs', type=int, default=16)
     parser.add_argument('--n_agreement_envs', type=int, default=16)
     parser.add_argument('--n_revolutions', type=int, default=3)
-    parser.add_argument('--n_dims', type=int, default=8)
+    parser.add_argument('--n_dims', type=int, default=998)
     parser.add_argument('--batch_size', type=int, default=256)
-    parser.add_argument('--epochs', type=int, default=150)
+    parser.add_argument('--epochs', type=int, default=50)
     parser.add_argument('--method', type=str, choices=['and_mask', 'geom_mean'], required=True)
     parser.add_argument('--scale_grad_inverse_sparsity', type=int, choices=[0, 1], required=True)
     parser.add_argument('--agreement_threshold', type=float, required=True)
@@ -39,7 +39,7 @@ def parse_args():
     parser.add_argument('--n_hidden_layers', type=int, default=3)
     parser.add_argument('--l1_coef', type=float, default=0.0)
     parser.add_argument('--l2_coef', type=float, default=0.0)
-    parser.add_argument('--seed', type=int, default=0)
+    parser.add_argument('--seed', type=int, default=1)
     parser.add_argument('--use_cuda', type=int, default=0, choices=[0, 1])
     return parser.parse_args()
 
@@ -192,7 +192,7 @@ def main(args):
 
     loss_fn = F.binary_cross_entropy_with_logits
 
-    summary_writer = SummaryWriter(f'/tmp/learning_explanations_exp_out/seed_{args.seed}/')
+    summary_writer = SummaryWriter(f'./tmp/seed_{args.seed}/')
 
     model = get_synthetic_model(args, device)
 
