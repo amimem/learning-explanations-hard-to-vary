@@ -15,7 +15,7 @@ from and_mask.and_mask_utils import get_grads
 from and_mask.datasets.common import permutation_groups
 import and_mask.datasets.synthetic.dataloader as synthetic_dataloader
 from and_mask.models.synthetic import get_synthetic_model
-from and_mask.utils.utils import add_l1_grads, add_l2_grads, validate_target_outupt_shapes, count_correct
+from and_mask.utils.utils import add_l1_grads, add_l2_grads, add_l1, add_l2, validate_target_outupt_shapes, count_correct
 
 
 def parse_args():
@@ -27,6 +27,7 @@ def parse_args():
     parser.add_argument('--n_revolutions', type=int, default=3)
     parser.add_argument('--n_dims', type=int, default=998)
     parser.add_argument('--batch_size', type=int, default=256)
+    parser.add_argument('--test_batch_size', type=int, default=1000)
     parser.add_argument('--epochs', type=int, default=50)
     parser.add_argument('--method', type=str, choices=['and_mask', 'geom_mean'], required=True)
     parser.add_argument('--scale_grad_inverse_sparsity', type=int, choices=[0, 1], required=True)
@@ -105,14 +106,20 @@ def train(model, device, train_loaders, optimizer, epoch, writer,
         )
         model.step += 1
 
+        mean_total_loss = 0
+
         if l1_coef > 0.0:
             add_l1_grads(l1_coef, optimizer.param_groups)
+            mean_total_loss += add_l1(args.l1_coef, optimizer.param_groups)
         if l2_coef > 0.0:
             add_l2_grads(l2_coef, optimizer.param_groups)
+            mean_total_loss += add_l2(args.l2_coef, optimizer.param_groups)
+
+        mean_total_loss += mean_loss.item()
 
         optimizer.step()
 
-        losses.append(mean_loss.item())
+        losses.append(mean_total_loss)
         correct += count_correct(output, target)
         example_count += output.shape[0]
         batch_idx += 1
@@ -185,7 +192,7 @@ def main(args):
         n_envs=args.n_train_envs,
         n_revolutions=args.n_revolutions,
         n_dims=args.n_dims,
-        batch_size=1000,
+        batch_size=args.test_batch_size,
         use_cuda=args.use_cuda,
         seed=2 ** 32 - 1
     )
