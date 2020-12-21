@@ -110,10 +110,10 @@ def train(model, device, train_loaders, optimizer, epoch, writer,
 
         if l1_coef > 0.0:
             add_l1_grads(l1_coef, optimizer.param_groups)
-            mean_total_loss += add_l1(args.l1_coef, optimizer.param_groups)
+            mean_total_loss += add_l1(l1_coef, optimizer.param_groups)
         if l2_coef > 0.0:
             add_l2_grads(l2_coef, optimizer.param_groups)
-            mean_total_loss += add_l2(args.l2_coef, optimizer.param_groups)
+            mean_total_loss += add_l2(l2_coef, optimizer.param_groups)
 
         mean_total_loss += mean_loss.item()
 
