@@ -1,5 +1,6 @@
 import argparse
 import sys
+import datetime
 
 import numpy as np
 from loguru import logger
@@ -199,7 +200,8 @@ def main(args):
 
     loss_fn = F.binary_cross_entropy_with_logits
 
-    summary_writer = SummaryWriter(f'./tmp/seed_{args.seed}/')
+    time = datetime.datetime.now()
+    summary_writer = SummaryWriter(f'./tmp/seed_{args.seed}/{time}')
 
     model = get_synthetic_model(args, device)
 
